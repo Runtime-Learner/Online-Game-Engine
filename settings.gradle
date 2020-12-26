@@ -9,4 +9,4 @@
 
 rootProject.name = 'online-game-engine'
 
-include ':EventRegistration-Backend'
+include ':game-engine-backend'

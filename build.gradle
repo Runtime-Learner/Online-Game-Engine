@@ -12,7 +12,7 @@ plugins {
 }
 
 task stage () {
-    dependsOn ':EventRegistration-Backend:assemble'
+    dependsOn ':game-engine-bakend:assemble'
 }
 
 repositories {
