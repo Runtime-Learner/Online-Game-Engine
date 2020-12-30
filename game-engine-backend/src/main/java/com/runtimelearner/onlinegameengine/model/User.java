@@ -3,31 +3,35 @@ package com.runtimelearner.onlinegameengine.model;
 
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "app_user")
 public class User extends Person {
 
 	private String username;
 	private String bio;
 	private String profilePictureUrl;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
-	private List<Game> games;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "gameAuthor")
+	private Set<Game> games;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-	private List<Rating> ratings;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "ratingAuthor")
+	private Set<Rating> ratings;
 	
 	@OneToMany(fetch = FetchType.LAZY)
-	private List<Webpage> webpages;
+	private Set<Webpage> webpages;
 	
 	public User(String email, String password, String username, String profilePictureUrl) {
 		super(email, password);
 		this.username = username;
 		this.profilePictureUrl = profilePictureUrl;
+		this.bio = "";
 	}
 
 	public User() {
@@ -81,44 +85,82 @@ public class User extends Person {
 	/**
 	 * @return the games
 	 */
-	public List<Game> getGames() {
+	public Set<Game> getGames() {
 		return games;
 	}
 
 	/**
 	 * @param games the games to set
 	 */
-	public void setGames(List<Game> games) {
+	public void setGames(Set<Game> games) {
 		this.games = games;
 	}
 
 	/**
 	 * @return the ratings
 	 */
-	public List<Rating> getRatings() {
+	public Set<Rating> getRatings() {
 		return ratings;
 	}
 
 	/**
 	 * @param ratings the ratings to set
 	 */
-	public void setRatings(List<Rating> ratings) {
+	public void setRatings(Set<Rating> ratings) {
 		this.ratings = ratings;
 	}
 
 	/**
 	 * @return the webpages
 	 */
-	public List<Webpage> getWebpages() {
+	public Set<Webpage> getWebpages() {
 		return webpages;
 	}
 
 	/**
 	 * @param webpages the webpages to set
 	 */
-	public void setWebpages(List<Webpage> webpages) {
+	public void setWebpages(Set<Webpage> webpages) {
 		this.webpages = webpages;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((bio == null) ? 0 : bio.hashCode());
+		result = prime * result + ((profilePictureUrl == null) ? 0 : profilePictureUrl.hashCode());
+		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (bio == null) {
+			if (other.bio != null)
+				return false;
+		} else if (!bio.equals(other.bio))
+			return false;
+		if (profilePictureUrl == null) {
+			if (other.profilePictureUrl != null)
+				return false;
+		} else if (!profilePictureUrl.equals(other.profilePictureUrl))
+			return false;
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		return true;
+	}
+
+	
 	
 }

@@ -2,6 +2,7 @@ package com.runtimelearner.onlinegameengine.model;
 
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -10,7 +11,7 @@ import javax.persistence.OneToMany;
 @Entity
 public class Admin extends Person{
 	@OneToMany
-	List<User> users;	//admin has list of users it is able to manage. User data is loaded when admins select them. This decreases the amount of network traffic
+	Set<User> users;
 
 	public Admin() {
 		super();
@@ -25,14 +26,14 @@ public class Admin extends Person{
 	/**
 	 * @return the users
 	 */
-	public List<User> getUsers() {
+	public Set<User> getUsers() {
 		return users;
 	}
 
 	/**
 	 * @param users the users to set
 	 */
-	public void setUsers(List<User> users) {
+	public void setUsers(Set<User> users) {
 		this.users = users;
 	}
 }

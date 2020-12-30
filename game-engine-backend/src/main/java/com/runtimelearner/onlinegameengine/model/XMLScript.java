@@ -10,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.springframework.context.annotation.Lazy;
+
 @Entity
 public class XMLScript {
     @Id
@@ -19,6 +21,7 @@ public class XMLScript {
     @OneToMany(fetch = FetchType.LAZY)
     private Set<XMLScript> referencedScripts;
     
+    @Lazy
     private Clob script;
     
 	public XMLScript() {

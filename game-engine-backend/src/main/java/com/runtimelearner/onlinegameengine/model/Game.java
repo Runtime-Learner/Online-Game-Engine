@@ -2,6 +2,7 @@ package com.runtimelearner.onlinegameengine.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
@@ -16,7 +17,7 @@ public class Game {
 	private boolean featured;
 	
 	@ManyToOne(optional=false)
-	private User author;
+	private User gameAuthor;
 	
 	@OneToOne
 	private XMLScript mainScript;
@@ -99,14 +100,14 @@ public class Game {
 	 * @return the author
 	 */
 	public User getAuthor() {
-		return author;
+		return gameAuthor;
 	}
 
 	/**
 	 * @param author the author to set
 	 */
 	public void setAuthor(User author) {
-		this.author = author;
+		this.gameAuthor = author;
 	}
 
 	/**

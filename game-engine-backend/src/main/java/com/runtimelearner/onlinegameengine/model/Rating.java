@@ -3,12 +3,14 @@ package com.runtimelearner.onlinegameengine.model;
 import java.util.UUID;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 
 @Entity
+@Table(name = "rating")
 public class Rating {
     @Id
     @GeneratedValue
@@ -21,7 +23,7 @@ public class Rating {
 	private Game game;
 	
 	@ManyToOne
-	private User user;
+	private User ratingAuthor;
 	
 	public Rating() {
 		
@@ -95,15 +97,15 @@ public class Rating {
 	/**
 	 * @return the user
 	 */
-	public User getUser() {
-		return user;
+	public User getRatingAuthor() {
+		return ratingAuthor;
 	}
 
 	/**
 	 * @param user the user to set
 	 */
-	public void setUser(User user) {
-		this.user = user;
+	public void setRatingAuthor(User user) {
+		this.ratingAuthor = user;
 	}
 	
 	
