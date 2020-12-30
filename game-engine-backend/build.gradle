@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.4.1'
 	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
 	id 'java'
+	id 'application'
 }
 
 group = 'com.example'
@@ -13,10 +14,32 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compile 'commons-validator:commons-validator:1.7'
+	implementation 'org.hibernate:hibernate-core:5.4.22.Final'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    	implementation 'junit:junit:4.12'
+    	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+	testImplementation 'org.mockito:mockito-core:2.+'
+	testImplementation 'org.mockito:mockito-junit-jupiter:2.18.3'
+	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	
+		//JUNIT 5.0 implemented here, runtime 
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '1.2.0.RELEASE'
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+	compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
+	
 }
 
 test {
