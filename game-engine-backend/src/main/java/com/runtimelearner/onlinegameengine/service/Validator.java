@@ -56,4 +56,12 @@ public class Validator {
 			throw new IllegalArgumentException("Username must begin with a letter!");
 		}
 	}
+	
+	public static void validateWebpageName(String webpageName) {
+		try {
+			validateUsername(webpageName);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(e.getMessage().replace("Username", "Webpage name"));
+		}
+	}
 }

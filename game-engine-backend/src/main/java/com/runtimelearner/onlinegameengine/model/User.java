@@ -1,8 +1,5 @@
 package com.runtimelearner.onlinegameengine.model;
 
-
-
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -18,13 +15,13 @@ public class User extends Person {
 	private String bio;
 	private String profilePictureUrl;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "gameAuthor")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "gameDeveloper")
 	private Set<Game> games;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "ratingAuthor")
 	private Set<Rating> ratings;
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "linkedUser")
 	private Set<Webpage> webpages;
 	
 	public User(String email, String password, String username, String profilePictureUrl) {
@@ -123,6 +120,7 @@ public class User extends Person {
 	public void setWebpages(Set<Webpage> webpages) {
 		this.webpages = webpages;
 	}
+	
 
 	@Override
 	public int hashCode() {

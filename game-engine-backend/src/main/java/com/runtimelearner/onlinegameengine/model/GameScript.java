@@ -11,38 +11,33 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Webpage {
+public class GameScript {
     @Id
     @GeneratedValue
-	private UUID id;
+	private UUID Id;
     
     @Basic(optional = false)
     private String name;
     
+    @ManyToOne(optional=false)
+    private Game linkedGame;
+    
     @Lob
     @Column(columnDefinition="TEXT")
-    private String htmlData;
+    private String xmlData;
     
-    @ManyToOne(optional=false)
-	private User linkedUser;
-    
-    
-	public Webpage() {
+	public GameScript() {
+		// TODO Auto-generated constructor stub
 	}
+
 	
-	public Webpage(String name, User user) {
-		this.htmlData = "";
-		this.name = name;
-		this.linkedUser = user;
-	}
-
-
 	/**
 	 * @return the id
 	 */
 	public UUID getId() {
-		return id;
+		return Id;
 	}
+
 
 	/**
 	 * @return the name
@@ -51,6 +46,7 @@ public class Webpage {
 		return name;
 	}
 
+
 	/**
 	 * @param name the name to set
 	 */
@@ -58,42 +54,48 @@ public class Webpage {
 		this.name = name;
 	}
 
-	/**
-	 * @return the htmlData
-	 */
-	public String getHtmlData() {
-		return htmlData;
-	}
 
 	/**
-	 * @param htmlData the htmlData to set
+	 * @return the linkedGame
 	 */
-	public void setHtmlData(String htmlData) {
-		this.htmlData = htmlData;
+	public Game getLinkedGame() {
+		return linkedGame;
 	}
 
-	/**
-	 * @return the linkedUser
-	 */
-	public User getLinkedUser() {
-		return linkedUser;
-	}
 
 	/**
-	 * @param linkedUser the linkedUser to set
+	 * @param linkedGame the linkedGame to set
 	 */
-	public void setLinkedUser(User linkedUser) {
-		this.linkedUser = linkedUser;
+	public void setLinkedGame(Game linkedGame) {
+		this.linkedGame = linkedGame;
 	}
+
+
+	/**
+	 * @return the xmlData
+	 */
+	public String getXmlData() {
+		return xmlData;
+	}
+
+
+	/**
+	 * @param xmlData the xmlData to set
+	 */
+	public void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
+	}
+
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((Id == null) ? 0 : Id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -103,11 +105,11 @@ public class Webpage {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Webpage other = (Webpage) obj;
-		if (id == null) {
-			if (other.id != null)
+		GameScript other = (GameScript) obj;
+		if (Id == null) {
+			if (other.Id != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!Id.equals(other.Id))
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -118,5 +120,6 @@ public class Webpage {
 	}
 
 	
+
 	
 }

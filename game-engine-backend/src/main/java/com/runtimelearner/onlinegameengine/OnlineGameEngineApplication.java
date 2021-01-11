@@ -5,8 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.runtimelearner.onlinegameengine.model.Webpage;
-
 @RestController
 @SpringBootApplication
 public class OnlineGameEngineApplication {

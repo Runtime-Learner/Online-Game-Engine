@@ -23,16 +23,12 @@ public class AdminService {
 	
 	@Transactional
 	public Admin createAdmin(String email, String password) {	
-		//validate email
-		Validator.validateEmail(email);
 		
 		//validate password
 		Validator.validatePassword(password);
 		
-		//check if email is aready being used
-		if (adminRepo.findAdminByEmail(email) != null || userRepo.findUserByEmail(email) != null) {
-			throw new IllegalArgumentException("Email is already associated with account!");
-		}
+		//check if email is valid and not aready being used
+		checkEmailIsUniqueAndValid(email);
 		
 		Admin admin = new Admin(email, password);
 		admin.setUsers(new HashSet<User>());
@@ -40,9 +36,22 @@ public class AdminService {
 		return admin;
 	}
 	
+	/**
+	 * used to validate email dynamically while admin is typing it
+	 * @param email
+	 */
+	public void checkEmailIsUniqueAndValid(String email) {
+		Validator.validateEmail(email);
+		
+		//check if email is already being used
+		if (adminRepo.findAdminByEmail(email) != null || userRepo.findUserByEmail(email) != null) {
+			throw new IllegalArgumentException("Email is already associated with account!");
+		}
+	}
+	
+	@Transactional
 	public Admin changePassword(String email, String currentPassword, String newPassword) {
 		Validator.validatePassword(newPassword);
-		Validator.validateEmail(email);
 		
 		Admin retrievedAdmin = getAdminByEmail_lazy(email);
 		if (! retrievedAdmin.getPassword().equals(currentPassword)) {
@@ -85,7 +94,6 @@ public class AdminService {
 	
 	@Transactional
 	public Admin addUser(String email, User user) {
-		Validator.validateEmail(email);
 		checkUserNotNull(user);
 		
 		Admin fullyLoadedAdmin = getAdminByEmail_eager(email);
@@ -97,7 +105,6 @@ public class AdminService {
 	
 	@Transactional
 	public Admin addUser(String email, Set<User> users) {
-		Validator.validateEmail(email);
 		checkUserSetNotNull(users);
 		
 		Admin fullyLoadedAdmin = getAdminByEmail_eager(email);
@@ -110,7 +117,6 @@ public class AdminService {
 	
 	@Transactional
 	public Admin removeUser(String email, User user) {
-		Validator.validateEmail(email);
 		checkUserNotNull(user);
 		
 		Admin fullyLoadedAdmin = getAdminByEmail_eager(email);
@@ -121,7 +127,6 @@ public class AdminService {
 	
 	@Transactional
 	public Admin removeUser(String email, Set<User> users) {
-		Validator.validateEmail(email);
 		checkUserSetNotNull(users);
 		
 		Admin fullyLoadedAdmin = getAdminByEmail_eager(email);
@@ -137,11 +142,13 @@ public class AdminService {
 			throw new IllegalArgumentException("Admin cannot be null!");
 		}
 	}
+	
 	private void checkUserNotNull(User user) {
 		if (user == null) {
 			throw new IllegalArgumentException("User cannot be null!");
 		}
 	}
+	
 	private void checkUserSetNotNull(Set<User> users) {
 		if (users == null) {
 			throw new IllegalArgumentException("User set cannot be null!");

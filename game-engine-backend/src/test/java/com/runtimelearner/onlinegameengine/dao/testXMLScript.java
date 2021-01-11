@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class testXMLScript {
 
 	@Autowired
-    private XMLScriptRepository xmlScriptRepository;
+    private GameScriptRepository xmlScriptRepository;
 	
 	
     /**

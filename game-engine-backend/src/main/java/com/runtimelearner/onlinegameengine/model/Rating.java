@@ -1,10 +1,12 @@
 package com.runtimelearner.onlinegameengine.model;
 
+
+import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
@@ -16,26 +18,39 @@ public class Rating {
     @GeneratedValue
 	private UUID Id;
     
+    @Basic(optional = false)
 	private byte rating;
+    
 	private String review;
 	
-	@ManyToOne
-	private Game game;
+	@Basic(optional = false)
+	private Date creationDate;
 	
-	@ManyToOne
+	@ManyToOne(optional=false)
+	private Game ratedGame;
+	
+	@ManyToOne(optional=false)
 	private User ratingAuthor;
+	
+	
 	
 	public Rating() {
 		
 	}
 	
-	public Rating(byte rating) {
+	public Rating(byte rating, User author, Game ratedGame) {
 		this.rating = rating;
+		this.ratingAuthor = author;
+		this.ratedGame = ratedGame;
+		this.creationDate = new Date();
 	}
 	
-	public Rating(byte rating, String review) {
+	public Rating(byte rating, String review, User author, Game ratedGame) {
 		this.rating = rating;
 		this.review = review;
+		this.ratingAuthor = author;
+		this.ratedGame = ratedGame;
+		this.creationDate = new Date();
 	}
 
 	/**
@@ -43,13 +58,6 @@ public class Rating {
 	 */
 	public UUID getId() {
 		return Id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(UUID id) {
-		Id = id;
 	}
 
 	/**
@@ -81,32 +89,73 @@ public class Rating {
 	}
 
 	/**
-	 * @return the game
+	 * @return the creationDate
 	 */
-	public Game getGame() {
-		return game;
+	public Date getCreationDate() {
+		return creationDate;
 	}
 
 	/**
-	 * @param game the game to set
+	 * @param creationDate the creationDate to set
 	 */
-	public void setGame(Game game) {
-		this.game = game;
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
 	/**
-	 * @return the user
+	 * @return the ratedGame
+	 */
+	public Game getRatedGame() {
+		return ratedGame;
+	}
+
+	/**
+	 * @param ratedGame the ratedGame to set
+	 */
+	public void setRatedGame(Game ratedGame) {
+		this.ratedGame = ratedGame;
+	}
+
+	/**
+	 * @return the ratingAuthor
 	 */
 	public User getRatingAuthor() {
 		return ratingAuthor;
 	}
 
 	/**
-	 * @param user the user to set
+	 * @param ratingAuthor the ratingAuthor to set
 	 */
-	public void setRatingAuthor(User user) {
-		this.ratingAuthor = user;
+	public void setRatingAuthor(User ratingAuthor) {
+		this.ratingAuthor = ratingAuthor;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((Id == null) ? 0 : Id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Rating other = (Rating) obj;
+		if (Id == null) {
+			if (other.Id != null)
+				return false;
+		} else if (!Id.equals(other.Id))
+			return false;
+		return true;
+	}
+
+	
 	
 	
 }

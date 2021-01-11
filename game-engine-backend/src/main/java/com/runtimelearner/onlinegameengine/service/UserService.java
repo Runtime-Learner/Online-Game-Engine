@@ -1,13 +1,16 @@
 package com.runtimelearner.onlinegameengine.service;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.runtimelearner.onlinegameengine.dao.AdminRepository;
 import com.runtimelearner.onlinegameengine.dao.UserRepository;
+import com.runtimelearner.onlinegameengine.dao.WebpageRepository;
 import com.runtimelearner.onlinegameengine.model.User;
 import com.runtimelearner.onlinegameengine.model.Game;
 import com.runtimelearner.onlinegameengine.model.Rating;
@@ -19,6 +22,8 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepo;
 	@Autowired
+	private AdminRepository adminRepo;
+	@Autowired
 	private GameService gameService;
 	@Autowired
 	private RatingService ratingService;
@@ -27,25 +32,16 @@ public class UserService {
 	
 	
 	@Transactional
-	public User createUser(String email, String password, String username) {	
-		//validate email
-		Validator.validateEmail(email);
-		
+	public User createUser(String email, String password, String username) throws IllegalArgumentException {	
+
 		//validate password
 		Validator.validatePassword(password);
 		
-		//validate username
-		Validator.validateUsername(username);
+		//check if username is valid and not already being used 
+		checkUsernameIsUniqueAndValid(username);
 		
-		//check if username is already being used
-		if (userRepo.findUserByUsername(username) != null) {
-			throw new IllegalArgumentException("Username is already taken!");
-		}
-		
-		//check if email is aready being used
-		if (userRepo.findUserByEmail(email) != null || userRepo.findUserByEmail(email) != null) {
-			throw new IllegalArgumentException("Email is already associated with account!");
-		}
+		//check if email is valid and not already being used
+		checkEmailIsUniqueAndValid(email);
 		
 		User user = new User(email, password, username, "");
 		user.setBio("");
@@ -56,9 +52,34 @@ public class UserService {
 		return user;
 	}
 	
-	public User changePassword(String email, String currentPassword, String newPassword) {
-		Validator.validatePassword(newPassword);
+	/**
+	 * used to validate username dynamically while user is typing it
+	 * @param username
+	 */
+	public void checkUsernameIsUniqueAndValid(String username) {
+		Validator.validateUsername(username);
+		//check if username is already being used
+		if (userRepo.findUserByUsername(username) != null) {
+			throw new IllegalArgumentException("Username is already taken!");
+		}
+	}
+	
+	/**
+	 * used to validate email dynamically while user is typing it
+	 * @param email
+	 */
+	public void checkEmailIsUniqueAndValid(String email) {
 		Validator.validateEmail(email);
+		
+		//check if email is already being used
+		if (adminRepo.findAdminByEmail(email) != null || userRepo.findUserByEmail(email) != null) {
+			throw new IllegalArgumentException("Email is already associated with account!");
+		}
+	}
+	
+	@Transactional
+	public User changePassword(String email, String currentPassword, String newPassword) throws IllegalArgumentException {
+		Validator.validatePassword(newPassword);	//no need to validate current password since it will be compared to retrieved user password
 		
 		User retrievedUser = getUserByEmail_lazy(email);
 		if (! retrievedUser.getPassword().equals(currentPassword)) {
@@ -69,8 +90,8 @@ public class UserService {
 		return retrievedUser;
 	}
 	
-	public User changeBio(String email, String newBio) {
-		Validator.validateEmail(email);
+	@Transactional
+	public User changeBio(String email, String newBio) throws IllegalArgumentException {
 		
 		User retrievedUser = getUserByEmail_lazy(email);
 		retrievedUser.setBio(newBio);
@@ -78,8 +99,8 @@ public class UserService {
 		return retrievedUser;
 	}
 	
-	public User changeProfilePictureURL(String email, String profilePicture) {
-		Validator.validateEmail(email);
+	@Transactional
+	public User changeProfilePictureURL(String email, String profilePicture) throws IllegalArgumentException {
 		
 		User retrievedUser = getUserByEmail_lazy(email);
 		retrievedUser.setProfilePictureUrl(profilePicture);
@@ -88,7 +109,31 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User getUserByEmail_lazy(String email) {
+	public User getUserByUsername_lazy(String username) throws IllegalArgumentException {
+		Validator.validateUsername(username);
+		
+		User retrievedUser = userRepo.findUserByUsername(username);
+		
+		checkUserNotNull(retrievedUser);
+		
+		return retrievedUser;
+	}
+	
+	@Transactional
+	public Set<User> getUsers_usernameContains_lazy(String username) throws IllegalArgumentException {
+		Validator.validateUsername(username);
+		
+		Set<User> retrievedUser = userRepo.findUserByUsernameContaining(username);
+		
+		if (retrievedUser == null || retrievedUser.size() == 0) {
+			throw new IllegalArgumentException("No registered usernames contain the given string!");
+		}
+		
+		return retrievedUser;
+	}
+	
+	@Transactional
+	public User getUserByEmail_lazy(String email) throws IllegalArgumentException {
 		Validator.validateEmail(email);
 		
 		User retrievedUser = userRepo.findUserByEmail(email);
@@ -99,7 +144,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User getUserByEmail_eager(String email) {
+	public User getUserByEmail_eager(String email) throws IllegalArgumentException {
 		Validator.validateEmail(email);
 		
 		User retrievedUser = userRepo.findUserByEmail(email);
@@ -113,7 +158,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User getUserByEmail_eager_Games_only(String email) {
+	public User getUserByEmail_eager_Games_only(String email) throws IllegalArgumentException {
 		Validator.validateEmail(email);
 		
 		User retrievedUser = userRepo.findUserByEmail(email);
@@ -125,7 +170,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User getUserByEmail_eager_Ratings_only(String email) {
+	public User getUserByEmail_eager_Ratings_only(String email) throws IllegalArgumentException {
 		Validator.validateEmail(email);
 		
 		User retrievedUser = userRepo.findUserByEmail(email);
@@ -137,7 +182,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User getUserByEmail_eager_Webpages_only(String email) {
+	public User getUserByEmail_eager_Webpages_only(String email) throws IllegalArgumentException {
 		Validator.validateEmail(email);
 		
 		User retrievedUser = userRepo.findUserByEmail(email);
@@ -149,7 +194,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User getUserByEmail_eager_Games_Ratings(String email) {
+	public User getUserByEmail_eager_Games_Ratings(String email) throws IllegalArgumentException {
 		Validator.validateEmail(email);
 		
 		User retrievedUser = userRepo.findUserByEmail(email);
@@ -162,7 +207,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User getUserByEmail_eager_Games_Webpages(String email) {
+	public User getUserByEmail_eager_Games_Webpages(String email) throws IllegalArgumentException {
 		Validator.validateEmail(email);
 		
 		User retrievedUser = userRepo.findUserByEmail(email);
@@ -175,7 +220,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User getUserByEmail_eager_Ratings_Webpages(String email) {
+	public User getUserByEmail_eager_Ratings_Webpages(String email) throws IllegalArgumentException {
 		Validator.validateEmail(email);
 		
 		User retrievedUser = userRepo.findUserByEmail(email);
@@ -189,7 +234,7 @@ public class UserService {
 	
 	//TODO: deleteUser should deleteRating, deleteGame, deleteWebpage
 	@Transactional
-	public void deleteUser(String email) {
+	public void deleteUser(String email) throws IllegalArgumentException {
 		User retrievedUser = getUserByEmail_eager(email);
 		
 //		for (Game userGame : retrievedUser.getGames()) {
@@ -198,14 +243,14 @@ public class UserService {
 //		for (Rating userRating : retrievedUser.getRatings()) {
 //			ratingService.deleteRating(userRating);
 //		}
-//		for (Webpage userWebpage : retrievedUser.getWebpages()) {
-//			webpageService.deleteWebpage(userWebpage);
-//		}
+		for (Webpage userWebpage : retrievedUser.getWebpages()) {
+			webpageService.deleteWebpage(userWebpage, retrievedUser);
+		}
 		userRepo.delete(retrievedUser);
 	}
 	
-	public User addGame(String email, Game game) {
-		Validator.validateEmail(email);
+	@Transactional
+	public User addGame(String email, Game game) throws IllegalArgumentException {
 		checkGameNotNull(game);
 		
 		User retrievedUser = getUserByEmail_eager_Games_only(email);
@@ -218,8 +263,8 @@ public class UserService {
 		return retrievedUser;
 	}
 	
-	public User deleteGame(String email, Game game) {
-		Validator.validateEmail(email);
+	@Transactional
+	public User deleteGame(String email, Game game) throws IllegalArgumentException {
 		checkGameNotNull(game);
 		
 		User retrievedUser = getUserByEmail_eager_Games_only(email);
@@ -232,8 +277,8 @@ public class UserService {
 		return retrievedUser;
 	}
 	
-	public User addRating(String email, Rating rating) {
-		Validator.validateEmail(email);
+	@Transactional
+	public User addRating(String email, Rating rating) throws IllegalArgumentException {
 		checkRatingNotNull(rating);
 		
 		User retrievedUser = getUserByEmail_eager_Ratings_only(email);
@@ -246,8 +291,8 @@ public class UserService {
 		return retrievedUser;
 	}
 	
-	public User deleteRating(String email, Rating rating) {
-		Validator.validateEmail(email);
+	@Transactional
+	public User deleteRating(String email, Rating rating) throws IllegalArgumentException {
 		checkRatingNotNull(rating);
 		
 		User retrievedUser = getUserByEmail_eager_Ratings_only(email);
@@ -260,8 +305,8 @@ public class UserService {
 		return retrievedUser;
 	}
 	
-	public User addWebpage(String email, Webpage webpage) {
-		Validator.validateEmail(email);
+	@Transactional
+	public User addWebpage(String email, Webpage webpage) throws IllegalArgumentException {
 		checkWebpageNotNull(webpage);
 		
 		User retrievedUser = getUserByEmail_eager_Webpages_only(email);
@@ -274,39 +319,36 @@ public class UserService {
 		return retrievedUser;
 	}
 	
-	public User deleteWebpage(String email, Webpage webpage) {
-		Validator.validateEmail(email);
-		checkWebpageNotNull(webpage);
+	@Transactional
+	public User deleteWebpage(String email, Webpage webpage) throws IllegalArgumentException {
 		
 		User retrievedUser = getUserByEmail_eager_Webpages_only(email);
-		if (!retrievedUser.getWebpages().contains(webpage))
-		{
-			throw new IllegalArgumentException("User does not contain Webpage!");
-		}
-		retrievedUser.getWebpages().add(webpage);
-		userRepo.save(retrievedUser);
+
+		webpageService.deleteWebpage(webpage, retrievedUser);
+		retrievedUser.getWebpages().remove(webpage);
+		
 		return retrievedUser;
 	}
 	
-	private void checkUserNotNull(User user) {
+	private void checkUserNotNull(User user) throws IllegalArgumentException {
 		if (user == null) {
 			throw new IllegalArgumentException("User cannot be null!");
 		}
 	}
 	
-	private void checkGameNotNull(Game game) {
+	private void checkGameNotNull(Game game) throws IllegalArgumentException {
 		if (game == null) {
 			throw new IllegalArgumentException("Game cannot be null!");
 		}
 	}
 	
-	private void checkRatingNotNull(Rating rating) {
+	private void checkRatingNotNull(Rating rating) throws IllegalArgumentException {
 		if (rating == null) {
 			throw new IllegalArgumentException("Rating cannot be null!");
 		}
 	}
 	
-	private void checkWebpageNotNull(Webpage webpage) {
+	private void checkWebpageNotNull(Webpage webpage) throws IllegalArgumentException {
 		if (webpage == null) {
 			throw new IllegalArgumentException("Webpage cannot be null!");
 		}

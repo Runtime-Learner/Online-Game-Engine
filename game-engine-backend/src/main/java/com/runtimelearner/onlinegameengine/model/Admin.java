@@ -1,7 +1,5 @@
 package com.runtimelearner.onlinegameengine.model;
 
-
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -36,4 +34,6 @@ public class Admin extends Person{
 	public void setUsers(Set<User> users) {
 		this.users = users;
 	}
+	
+	
 }
