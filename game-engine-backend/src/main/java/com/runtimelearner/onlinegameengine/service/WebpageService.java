@@ -88,22 +88,16 @@ public class WebpageService {
 	}
 	
 	@Transactional
-	public void updateWebpageByNameAndUserEmail(String nameOfPage, String userEmail, String html) {
+	public Webpage updateWebpageByNameAndUserEmail(String nameOfPage, String userEmail, String html) {
+		if (html == null) {
+			throw new IllegalArgumentException("cannot save null data!");
+		}
+		
 		Webpage page = getWebpageByNameAndUserEmail(nameOfPage, userEmail);
 		page.setHtmlData(html);
-		webpageRepo.save(page);
+		page = webpageRepo.save(page);
+		return page;
 	}
-	
-	@Transactional
-	public void updateWebpageByIdAndUserEmail(UUID id, String userEmail, String html) {
-		Webpage page = getWebpageById(id);
-		
-		verifyPageBelongsToUser(page, userEmail);
-		
-		page.setHtmlData(html);
-		webpageRepo.save(page);
-	}
-	
 
 	
 	@Transactional

@@ -64,4 +64,12 @@ public class Validator {
 			throw new IllegalArgumentException(e.getMessage().replace("Username", "Webpage name"));
 		}
 	}
+	
+	public static void validateGameName(String gameName) {
+		try {
+			validateUsername(gameName);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(e.getMessage().replace("Username", "Game name"));
+		}
+	}
 }

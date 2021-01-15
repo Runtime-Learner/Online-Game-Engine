@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.runtimelearner.onlinegameengine.dao.AdminRepository;
 import com.runtimelearner.onlinegameengine.dao.UserRepository;
-import com.runtimelearner.onlinegameengine.dao.WebpageRepository;
 import com.runtimelearner.onlinegameengine.model.User;
 import com.runtimelearner.onlinegameengine.model.Game;
 import com.runtimelearner.onlinegameengine.model.Rating;
@@ -249,108 +248,9 @@ public class UserService {
 		userRepo.delete(retrievedUser);
 	}
 	
-	@Transactional
-	public User addGame(String email, Game game) throws IllegalArgumentException {
-		checkGameNotNull(game);
-		
-		User retrievedUser = getUserByEmail_eager_Games_only(email);
-		if (retrievedUser.getGames().contains(game))
-		{
-			throw new IllegalArgumentException("User already contains Game!");
-		}
-		retrievedUser.getGames().add(game);
-		userRepo.save(retrievedUser);
-		return retrievedUser;
-	}
-	
-	@Transactional
-	public User deleteGame(String email, Game game) throws IllegalArgumentException {
-		checkGameNotNull(game);
-		
-		User retrievedUser = getUserByEmail_eager_Games_only(email);
-		if (!retrievedUser.getGames().contains(game))
-		{
-			throw new IllegalArgumentException("User does not contain Game!");
-		}
-		retrievedUser.getGames().remove(game);
-		userRepo.save(retrievedUser);
-		return retrievedUser;
-	}
-	
-	@Transactional
-	public User addRating(String email, Rating rating) throws IllegalArgumentException {
-		checkRatingNotNull(rating);
-		
-		User retrievedUser = getUserByEmail_eager_Ratings_only(email);
-		if (retrievedUser.getRatings().contains(rating))
-		{
-			throw new IllegalArgumentException("User already contains Rating!");
-		}
-		retrievedUser.getRatings().add(rating);
-		userRepo.save(retrievedUser);
-		return retrievedUser;
-	}
-	
-	@Transactional
-	public User deleteRating(String email, Rating rating) throws IllegalArgumentException {
-		checkRatingNotNull(rating);
-		
-		User retrievedUser = getUserByEmail_eager_Ratings_only(email);
-		if (!retrievedUser.getRatings().contains(rating))
-		{
-			throw new IllegalArgumentException("User does not contain Rating!");
-		}
-		retrievedUser.getRatings().add(rating);
-		userRepo.save(retrievedUser);
-		return retrievedUser;
-	}
-	
-	@Transactional
-	public User addWebpage(String email, Webpage webpage) throws IllegalArgumentException {
-		checkWebpageNotNull(webpage);
-		
-		User retrievedUser = getUserByEmail_eager_Webpages_only(email);
-		if (retrievedUser.getWebpages().contains(webpage))
-		{
-			throw new IllegalArgumentException("User already contains Webpage!");
-		}
-		retrievedUser.getWebpages().add(webpage);
-		userRepo.save(retrievedUser);
-		return retrievedUser;
-	}
-	
-	@Transactional
-	public User deleteWebpage(String email, Webpage webpage) throws IllegalArgumentException {
-		
-		User retrievedUser = getUserByEmail_eager_Webpages_only(email);
-
-		webpageService.deleteWebpage(webpage, retrievedUser);
-		retrievedUser.getWebpages().remove(webpage);
-		
-		return retrievedUser;
-	}
-	
 	private void checkUserNotNull(User user) throws IllegalArgumentException {
 		if (user == null) {
 			throw new IllegalArgumentException("User cannot be null!");
-		}
-	}
-	
-	private void checkGameNotNull(Game game) throws IllegalArgumentException {
-		if (game == null) {
-			throw new IllegalArgumentException("Game cannot be null!");
-		}
-	}
-	
-	private void checkRatingNotNull(Rating rating) throws IllegalArgumentException {
-		if (rating == null) {
-			throw new IllegalArgumentException("Rating cannot be null!");
-		}
-	}
-	
-	private void checkWebpageNotNull(Webpage webpage) throws IllegalArgumentException {
-		if (webpage == null) {
-			throw new IllegalArgumentException("Webpage cannot be null!");
 		}
 	}
 
