@@ -10,4 +10,5 @@ import java.util.List;
 public interface GameRepository extends CrudRepository<Game, Long>{
 	List<Game> findAll();
 	List<Game> findByFeaturedAndStatusNot(boolean featured, GameStatus isNot);
+	Game findGameByName(String name);
 }
