@@ -379,7 +379,7 @@ public class testWebpage {
     }
     
     @Test
-    public void test_25_deleteWebpageByIdAndUserEmail_validPageId__validUserEmail_userExists() {
+    public void test_32_deleteWebpageByIdAndUserEmail_validPageId__validUserEmail_userExists() {
     	User user = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
     	Webpage webpage = webpageService.createWebpage(TestResources.legalWebpageNames[0], user.getEmail());
     	User retrievedUser = userService.getUserByEmail_eager_Webpages_only(user.getEmail());
@@ -398,7 +398,7 @@ public class testWebpage {
     }
     
     @Test
-    public void test_26_deleteWebpageByIdAndUserEmail_validPageId__userDoesNotExist_pageDoesNotExist() {	
+    public void test_33_deleteWebpageByIdAndUserEmail_validPageId__userDoesNotExist_pageDoesNotExist() {	
     	
     	try {
     		webpageService.deleteWebpageByIdAndUserEmail(UUID.randomUUID(), TestResources.legalEmails[0]);
@@ -409,7 +409,7 @@ public class testWebpage {
     }
     
     @Test
-    public void test_27_deleteWebpageByIdAndUserEmail_validPageId_userExists_pageDoesNotExist() {
+    public void test_34_deleteWebpageByIdAndUserEmail_validPageId_userExists_pageDoesNotExist() {
     	User user = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
 
     	try {
@@ -421,7 +421,7 @@ public class testWebpage {
     }
     
     @Test
-    public void test_29_deleteWebpageByIdAndUserEmail_validPageId_invalidUserEmail() {
+    public void test_35_deleteWebpageByIdAndUserEmail_validPageId_invalidUserEmail() {
     	try {
     		webpageService.deleteWebpageByIdAndUserEmail(UUID.randomUUID(), TestResources.illegalEmails[0]);
     		fail();
@@ -431,7 +431,7 @@ public class testWebpage {
     }
     
     @Test
-    public void test_30_deleteWebpageByIdAndUserEmail_nullPageId_validUserEmail() {
+    public void test_36_deleteWebpageByIdAndUserEmail_nullPageId_validUserEmail() {
     	try {
     		webpageService.deleteWebpageByIdAndUserEmail(null, TestResources.legalEmails[0]);
     		fail();
@@ -441,7 +441,7 @@ public class testWebpage {
     }
     
     @Test
-    public void test_31_deleteWebpageByIdAndUserEmail_validPageId_nullUserEmail() {
+    public void test_37_deleteWebpageByIdAndUserEmail_validPageId_nullUserEmail() {
     	try {
     		webpageService.deleteWebpageByIdAndUserEmail(UUID.randomUUID(), null);
     		fail();
@@ -450,4 +450,156 @@ public class testWebpage {
     	}
     }
     
+    @Test
+    public void test_38_deleteWebpageByPageAndUser_validPage_validUser_UserOwnsPage() {
+    	User user = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
+    	Webpage webpage = webpageService.createWebpage(TestResources.legalWebpageNames[0], user.getEmail());
+    	User retrievedUser = userService.getUserByEmail_eager_Webpages_only(user.getEmail());
+    	assert(retrievedUser.getWebpages().contains(webpage));
+    	assertEquals(webpage.getLinkedUser(), retrievedUser);
+    	assertEquals(webpage.getName(), TestResources.legalWebpageNames[0]);
+    	
+    	webpageService.deleteWebpage(webpage, user);
+    	
+    	try {
+    		webpageService.getWebpageById(webpage.getId());
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "Webpage is null!");
+    	}
+    }
+    
+    @Test
+    public void test_39_deleteWebpageByPageAndUser_validPage_validUser_UserDoesNotOwnPage() {	
+    	User user = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
+    	Webpage webpage = webpageService.createWebpage(TestResources.legalWebpageNames[0], user.getEmail());
+    	User retrievedUser = userService.getUserByEmail_eager_Webpages_only(user.getEmail());
+    	assert(retrievedUser.getWebpages().contains(webpage));
+    	assertEquals(webpage.getLinkedUser(), retrievedUser);
+    	assertEquals(webpage.getName(), TestResources.legalWebpageNames[0]);
+    	
+    	User user2 = userService.createUser(TestResources.legalEmails[1], TestResources.legalPasswords[0], TestResources.legalUsernames[1]);
+    	
+    	try {
+    		webpageService.deleteWebpage(webpage, user2);
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "This webpage does not belong to this user!");
+    	}
+    }
+    
+    @Test
+    public void test_40_deleteWebpageByPageAndUser_nullPage_validUser() {
+    	User user = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
+
+    	try {
+    		webpageService.deleteWebpage(null, user);
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "Webpage is null!");
+    	}
+    }
+    
+    @Test
+    public void test_41_deleteWebpageByPageAndUser_validPage_nullUser() {
+    	User user = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
+    	Webpage webpage = webpageService.createWebpage(TestResources.legalWebpageNames[0], user.getEmail());
+    	User retrievedUser = userService.getUserByEmail_eager_Webpages_only(user.getEmail());
+    	assert(retrievedUser.getWebpages().contains(webpage));
+    	assertEquals(webpage.getLinkedUser(), retrievedUser);
+    	assertEquals(webpage.getName(), TestResources.legalWebpageNames[0]);
+    	
+    	try {
+    		webpageService.deleteWebpage(webpage, null);
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "User cannot be null!");
+    	}
+    }
+    
+    @Test
+    public void test_08_updateWebpageByNameAndUserEmail_validPageName__userExists_pageExists_htmlValid() {
+    	User user = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
+    	Webpage webpage = webpageService.createWebpage(TestResources.legalWebpageNames[0], user.getEmail());
+    	assertEquals(webpage.getHtmlData(), "");
+    	webpage = webpageService.updateWebpageByNameAndUserEmail(webpage.getName(), user.getEmail(), "new html data!");
+    	Webpage retrievedPage = webpageService.getWebpageByNameAndUserEmail(webpage.getName(), user.getEmail());
+    	assertEquals(webpage, retrievedPage);
+    	assertEquals(webpage.getHtmlData(), "new html data!");
+    }
+    
+    @Test
+    public void test_08_updateWebpageByNameAndUserEmail_validPageName__userExists_pageExists_htmlNull() {
+    	User user = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
+    	Webpage webpage = webpageService.createWebpage(TestResources.legalWebpageNames[0], user.getEmail());
+    	assertEquals(webpage.getHtmlData(), "");
+    	try {
+    	webpage = webpageService.updateWebpageByNameAndUserEmail(webpage.getName(), user.getEmail(), null);
+    	fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "cannot save null data!");
+    	}
+    }
+    
+    @Test
+    public void test_09_updateWebpageByNameAndUserEmail_validPageName__userDoesNotExist_pageDoesNotExist() {
+    	try {
+    		webpageService.updateWebpageByNameAndUserEmail(TestResources.legalWebpageNames[0], TestResources.legalEmails[0], "");
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "Webpage is null!");
+    	}
+    }
+    
+    @Test
+    public void test_10_updateWebpageByNameAndUserEmail_validPageName__userExists_pageDoesNotExist() {
+    	User user = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
+    	try {
+    		webpageService.updateWebpageByNameAndUserEmail(TestResources.legalWebpageNames[0], user.getEmail(), "");
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "Webpage is null!"); 
+    	}
+    }
+    
+    @Test
+    public void test_11_updateWebpageByNameAndUserEmail_invalidPageName_validUserEmail() {
+    	try {
+    		webpageService.updateWebpageByNameAndUserEmail(TestResources.illegalWebpageNames[0], TestResources.legalEmails[0], "");
+    		fail();
+    	} catch (IllegalArgumentException e) {
+
+    	}
+    }
+    
+    @Test
+    public void test_12_updateWebpageByNameAndUserEmail_validPageName_invalidUserEmail() {
+    	try {
+    		webpageService.updateWebpageByNameAndUserEmail(TestResources.legalWebpageNames[0], TestResources.illegalEmails[0], "");
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "Email is null or has wrong format!");
+    	}
+    }
+    
+    @Test
+    public void test_13_updateWebpageByNameAndUserEmail_nullPageName_validUserEmail() {
+    	try {
+    		webpageService.updateWebpageByNameAndUserEmail(null, TestResources.legalEmails[0], "");
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "Webpage name cannot be empty!");
+    	}
+    }
+    
+    @Test
+    public void test_14_updateWebpageByNameAndUserEmail_validPageName__nullUserEmail() {
+    	try {
+    		webpageService.updateWebpageByNameAndUserEmail(TestResources.legalWebpageNames[0], null, "");
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals(e.getMessage(), "Email is null or has wrong format!");
+    	}
+    }
+
 }

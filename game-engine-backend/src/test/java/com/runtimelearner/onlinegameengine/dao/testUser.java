@@ -488,6 +488,7 @@ public class testUser {
     
     @Test
     public void test_42_deleteUserFromEmail_userExists() {
+    	//TODO: add webpage to user, add game to user, add rating to user
     	User originalUser = userService.createUser(TestResources.legalEmails[0], TestResources.legalPasswords[0], TestResources.legalUsernames[0]);
     	userService.deleteUser(originalUser.getEmail());
     	try {
@@ -725,10 +726,5 @@ public class testUser {
     	fail();
     }
 
-  //TODO: addGame
-  //TODO: deleteGame
-  //TODO: addRating
-  //TODO: deleteRating
-  //TODO: addWebpage
-  //TODO: deleteWebpage
+    //TODO: delete user
 }
